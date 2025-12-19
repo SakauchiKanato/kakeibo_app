@@ -97,6 +97,12 @@ $res_history = pg_query_params($dbconn, $sql_history, array($_SESSION['user_id']
         <div style="font-size: 0.8rem; opacity: 0.8;">目標: <?php echo number_format($today_budget); ?>円</div>
     </div>
 
+    <div style="text-align: right; margin-bottom: 10px;">
+    <a href="settings.php" style="text-decoration: none; font-size: 0.85rem; color: #764ba2; font-weight: bold;">
+        ⚙️ 予算を変更する
+    </a>
+    </div>
+
     <div class="card">
         <h3>記録する</h3>
         <form action="add_action.php" method="post">
