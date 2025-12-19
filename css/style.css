@@ -1,0 +1,94 @@
+/* 全体のフォントと背景 */
+body {
+    font-family: 'Helvetica Neue', Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* カード形式のコンテナ */
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+/* 予算表示をインパクトのあるデザインに */
+.budget-box {
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+}
+
+.budget-amount {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+/* テーブルをオシャレに */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 10px;
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #777;
+    font-weight: 600;
+    padding: 12px;
+    text-align: left;
+    font-size: 0.85rem;
+    border-bottom: 2px solid #eee;
+}
+
+td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+}
+
+tr:hover {
+    background-color: #fdfdfd;
+}
+
+/* 満足度の星の色 */
+.stars {
+    color: #ffca28;
+    letter-spacing: 2px;
+}
+
+/* 削除ボタンをタグ風に */
+.delete-btn {
+    background: #ffebee;
+    color: #e53935;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.delete-btn:hover {
+    background: #e53935;
+    color: white;
+}
+
+/* 検索窓のスタイル */
+#historySearch {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
