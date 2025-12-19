@@ -124,17 +124,23 @@ $today_remaining = $today_budget - $today_spent;
 <h3>最近の支出履歴</h3>
 <table border="1" style="width:100%; border-collapse: collapse; background: white;">
     <tr style="background: #eee;">
-        <th>内容</th><th>金額</th><th>満足度</th><th>日時</th>
-    </tr>
+        <th>内容</th><th>金額</th><th>満足度</th><th>日時</th><th>操作</th> </tr>
     <?php
-    $sql_history = "SELECT description, amount, satisfaction, created_at FROM transactions WHERE user_id = $1 ORDER BY created_at DESC LIMIT 5";
+    // idも取得するようにSQLを変更します
+    $sql_history = "SELECT id, description, amount, satisfaction, created_at FROM transactions WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10";
     $res_history = pg_query_params($dbconn, $sql_history, array($_SESSION['user_id']));
-    while ($row = pg_fetch_row($res_history)): ?>
+    
+    while ($row = pg_fetch_assoc($res_history)): ?>
         <tr>
-            <td><?php echo htmlspecialchars($row[0]); ?></td>
-            <td><?php echo number_format($row[1]); ?>円</td>
-            <td><?php echo str_repeat("⭐️", $row[2]); ?></td>
-            <td><?php echo date('H:i', strtotime($row[3])); ?></td>
+            <td><?php echo htmlspecialchars($row['description']); ?></td>
+            <td><?php echo number_format($row['amount']); ?>円</td>
+            <td><?php echo str_repeat("⭐️", $row['satisfaction']); ?></td>
+            <td><?php echo date('H:i', strtotime($row['created_at'])); ?></td>
+            <td style="text-align: center;">
+                <a href="delete_action.php?id=<?php echo $row['id']; ?>" 
+                   onclick="return confirm('この記録を削除してもよろしいですか？')" 
+                   style="color: red; text-decoration: none; font-size: 0.8em;">[削除]</a>
+            </td>
         </tr>
     <?php endwhile; ?>
 </table>
