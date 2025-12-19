@@ -1,5 +1,5 @@
 <?php
-// 1. ログイン・DB接続・計算ロジック（今までのものをそのまま維持）
+// 1. ログイン・DB接続・計算ロジック
 if (empty($_SERVER['HTTPS'])) {
     header("location: https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
     exit();
@@ -34,6 +34,38 @@ $today_remaining = $today_budget - $today_spent;
 // 履歴取得
 $sql_history = "SELECT id, description, amount, satisfaction, created_at FROM transactions WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10";
 $res_history = pg_query_params($dbconn, $sql_history, array($user_id));
+
+// ① 満足度別の支出合計（ドーナツグラフ用）
+$sql_pie = "SELECT satisfaction, SUM(amount) as sum_amount FROM transactions WHERE user_id = $1 GROUP BY satisfaction ORDER BY satisfaction DESC";
+$res_pie = pg_query_params($dbconn, $sql_pie, array($user_id));
+
+$pie_data = [0, 0, 0, 0, 0]; 
+while ($row = pg_fetch_assoc($res_pie)) {
+    $idx = intval($row['satisfaction']) - 1;
+    if ($idx >= 0 && $idx < 5) {
+        $pie_data[$idx] = intval($row['sum_amount']);
+    }
+}
+$json_pie_data = json_encode($pie_data); // 配列の並び順はHTML側のcolorsと合わせるためそのまま
+
+// ② 過去7日間の日別支出（棒グラフ用）
+$sql_bar = "
+    SELECT to_char(created_at, 'MM/DD') as day_str, SUM(amount) as total 
+    FROM transactions 
+    WHERE user_id = $1 AND created_at > (current_date - interval '7 days') 
+    GROUP BY day_str 
+    ORDER BY day_str ASC
+";
+$res_bar = pg_query_params($dbconn, $sql_bar, array($user_id));
+
+$bar_labels = [];
+$bar_data = [];
+while ($row = pg_fetch_assoc($res_bar)) {
+    $bar_labels[] = $row['day_str'];
+    $bar_data[] = intval($row['total']);
+}
+$json_bar_labels = json_encode($bar_labels);
+$json_bar_data = json_encode($bar_data);
 ?>
 
 <!DOCTYPE html>
@@ -42,7 +74,10 @@ $res_history = pg_query_params($dbconn, $sql_history, array($user_id));
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>家計簿AI</title>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         /* CSS: アプリ全体のスタイル */
         body { font-family: sans-serif; margin: 0; background: #f0f2f5; overflow: hidden; }
@@ -145,17 +180,28 @@ $res_history = pg_query_params($dbconn, $sql_history, array($user_id));
 
         <div class="swiper-slide" style="background: white;">
             <div class="container">
-                <h2 style="text-align:center;">📊 分析レポート</h2>
-                <div class="card" style="text-align:center; color:#999; padding: 50px 20px;">
-                    ここには今後グラフが表示されます。<br>お楽しみに！
+                <h2 style="text-align:center; color:#333;">📊 分析レポート</h2>
+                
+                <div class="card">
+                    <h3 style="margin-top:0; font-size:1rem; color:#666;">満足度内訳（金額ベース）</h3>
+                    <div style="position: relative; height:200px; width:100%;">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                    <p style="text-align:center; font-size:0.8rem; color:#888;">
+                        星5にお金を使えているかチェック！
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-top:0; font-size:1rem; color:#666;">直近7日間の支出</h3>
+                    <div style="position: relative; height:200px; width:100%;">
+                        <canvas id="barChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
 
-    </div>
-</div>
-
-<nav class="bottom-nav">
+    </div> </div> <nav class="bottom-nav">
     <button class="nav-item" onclick="swiper.slideTo(0)" id="nav0">💬<span>AI相談</span></button>
     <button class="nav-item active" onclick="swiper.slideTo(1)" id="nav1">🏠<span>ホーム</span></button>
     <button class="nav-item" onclick="swiper.slideTo(2)" id="nav2">📈<span>分析</span></button>
@@ -175,5 +221,65 @@ $res_history = pg_query_params($dbconn, $sql_history, array($user_id));
         }
     });
 </script>
+
+<script>
+    // --- グラフの描画設定 ---
+    
+    // PHPから受け取ったデータをJS変数に入れる
+    const pieData = <?php echo $json_pie_data; ?>; // 例: [3000, 200, 0, 500, 1000] (星1〜星5の順)
+    
+    // 1. ドーナツグラフ（満足度）
+    const ctxPie = document.getElementById('pieChart').getContext('2d');
+    new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+            labels: ['星1(後悔)', '星2(微妙)', '星3(普通)', '星4(満足)', '星5(最高)'],
+            datasets: [{
+                data: pieData, 
+                backgroundColor: [
+                    '#e0e0e0', // 星1: グレー
+                    '#90a4ae', // 星2: ブルーグレー
+                    '#4db6ac', // 星3: 青緑
+                    '#ffca28', // 星4: 黄色
+                    '#ff9800'  // 星5: オレンジ
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { boxWidth: 10 } }
+            }
+        }
+    });
+
+    // 2. 棒グラフ（日別支出）
+    const barLabels = <?php echo $json_bar_labels; ?>;
+    const barData = <?php echo $json_bar_data; ?>;
+    
+    const ctxBar = document.getElementById('barChart').getContext('2d');
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: barLabels,
+            datasets: [{
+                label: '支出額(円)',
+                data: barData,
+                backgroundColor: '#667eea',
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+
 </body>
 </html>
