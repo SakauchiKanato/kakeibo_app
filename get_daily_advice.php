@@ -26,7 +26,7 @@ if (empty($items)) {
 // 2. Pythonに渡す文字列を作成
 $all_items_str = implode(" / ", $items);
 
-// 3. Python呼び出し（引数は まとめた文字列, 合計金額 の2つに簡略化）
+// 3. Python呼び出し
 $pythonPath = "/usr/bin/python3"; 
 $scriptPath = __DIR__ . "/python/ask_ai.py";
 
@@ -38,6 +38,17 @@ $cmd = sprintf(
     escapeshellarg($total_spent)
 );
 
-$_SESSION['ai_comment'] = shell_exec($cmd);
+// AIの回答を取得
+$ai_response = shell_exec($cmd);
+
+// --- 4. 【追加】AIの回答をデータベースに保存 ---
+if (!empty($ai_response)) {
+    $sql_insert = "INSERT INTO ai_advice_history (user_id, advice) VALUES ($1, $2)";
+    pg_query_params($dbconn, $sql_insert, array($user_id, $ai_response));
+}
+
+// セッションにも念のためセット（今の表示方式を壊さないため）
+$_SESSION['ai_comment'] = $ai_response;
+
 header("Location: index.php?slide=0");
 exit();
