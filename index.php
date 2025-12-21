@@ -4,7 +4,7 @@ session_start();
 // 1. DB接続
 $dbconn = pg_connect("host=localhost dbname=knt416 user=knt416 password=nFb55bRP") or die('接続失敗');
 
-// 2. ログインチェック (セッションがなければログイン画面へ)
+// 2. ログインチェック
 if (!isset($_SESSION['user_id'])) {
     header('location: ./login.php');
     exit();
@@ -13,20 +13,11 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $ems = $_SESSION['ems'];
 
-// --- 3. チャット履歴の管理ロジック ---
-if (isset($_SESSION['ai_comment'])) {
-    // 履歴を保存する配列がなければ作成
-    if (!isset($_SESSION['chat_log'])) {
-        $_SESSION['chat_log'] = [];
-    }
-    // 新しいコメントを履歴の先頭に追加 [時間, 内容]
-    array_unshift($_SESSION['chat_log'], [
-        'time' => date('H:i'),
-        'comment' => $_SESSION['ai_comment']
-    ]);
-    // セッションの元データは消去（リロードで増えないように）
-    unset($_SESSION['ai_comment']);
-}
+// --- 3. AIアドバイス履歴の取得（DBから取得するように変更） ---
+// ※先にSQLで ai_advice_history テーブルを作成しておく必要があります
+$sql_ai = "SELECT id, advice, to_char(created_at, 'MM/DD HH24:MI') as time_str FROM ai_advice_history WHERE user_id = $1 ORDER BY created_at DESC LIMIT 20";
+$res_ai = pg_query_params($dbconn, $sql_ai, array($user_id));
+$chat_logs = pg_fetch_all($res_ai) ?: [];
 
 // --- 4. 計算ロジック（ホーム画面用） ---
 $sql_sum = "SELECT SUM(amount) FROM transactions WHERE user_id = $1 AND date_trunc('month', created_at) = date_trunc('month', current_timestamp)";
@@ -45,8 +36,7 @@ $res_today_spent = pg_query_params($dbconn, $sql_today_spent, array($user_id));
 $today_spent = pg_fetch_row($res_today_spent)[0] ?? 0;
 $today_remaining = $today_budget - $today_spent;
 
-// --- 5. グラフデータ集計（分析画面用） ---
-// 満足度
+// --- 5. グラフデータ集計 ---
 $sql_pie = "SELECT satisfaction, SUM(amount) as sum_amount FROM transactions WHERE user_id = $1 GROUP BY satisfaction";
 $res_pie = pg_query_params($dbconn, $sql_pie, array($user_id));
 $pie_data = [0, 0, 0, 0, 0];
@@ -56,7 +46,6 @@ while ($row = pg_fetch_assoc($res_pie)) {
 }
 $json_pie_data = json_encode($pie_data);
 
-// 過去7日間
 $sql_bar = "SELECT to_char(created_at, 'MM/DD') as day_str, SUM(amount) as total FROM transactions WHERE user_id = $1 AND created_at > (current_date - interval '7 days') GROUP BY day_str ORDER BY day_str ASC";
 $res_bar = pg_query_params($dbconn, $sql_bar, array($user_id));
 $bar_labels = []; $bar_data = [];
@@ -66,6 +55,15 @@ while ($row = pg_fetch_assoc($res_bar)) {
 }
 $json_bar_labels = json_encode($bar_labels);
 $json_bar_data = json_encode($bar_data);
+
+// --- 6. 金額の履歴（支出明細）を取得 ---
+$sql_list = "SELECT id, description, amount, satisfaction, to_char(created_at, 'MM/DD HH24:MI') as date_str 
+             FROM transactions 
+             WHERE user_id = $1 
+             ORDER BY created_at DESC 
+             LIMIT 15";
+$res_list = pg_query_params($dbconn, $sql_list, array($user_id));
+$recent_transactions = pg_fetch_all($res_list) ?: [];
 ?>
 
 <!DOCTYPE html>
@@ -78,25 +76,15 @@ $json_bar_data = json_encode($bar_data);
     <style>
         body { font-family: 'Hiragino Kaku Gothic ProN', sans-serif; margin: 0; background: #f0f2f5; overflow: hidden; }
         .swiper { width: 100%; height: 100vh; }
-        .swiper-slide { height: 100vh; overflow-y: auto; padding-bottom: 80px; box-sizing: border-box; }
+        .swiper-slide { height: 100vh; overflow-y: auto; padding-bottom: 100px; box-sizing: border-box; }
         .container { padding: 40px 20px; max-width: 600px; margin: 0 auto; }
-        
-        /* パーツ設定 */
-        .card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .budget-box { text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 25px; margin-bottom: 25px; }
-        
-        /* チャットスタイル */
         .chat-container { display: flex; flex-direction: column; gap: 15px; }
-        .chat-bubble { padding: 15px 20px; border-radius: 20px; max-width: 80%; line-height: 1.6; position: relative; }
-        .ai-msg { background: #ffffff; color: #333; align-self: flex-start; border: 1px solid #e0e0e0; border-bottom-left-radius: 2px; }
+        .chat-bubble { padding: 15px 20px; border-radius: 20px; max-width: 85%; line-height: 1.6; position: relative; background: #ffffff; border: 1px solid #e0e0e0; border-bottom-left-radius: 2px; }
         .chat-time { font-size: 0.7rem; color: #999; margin-bottom: 5px; }
-
-        /* 入力フォーム */
         input, select, button { padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #ddd; width: 100%; box-sizing: border-box; font-size: 1rem; }
-        button { background: #3498db; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { opacity: 0.8; }
-
-        /* ナビゲーション */
+        button { background: #3498db; color: white; border: none; cursor: pointer; font-weight: bold; }
         .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: white; display: flex; border-top: 1px solid #ddd; z-index: 1000; }
         .nav-item { flex: 1; border: none; background: none; color: #aaa; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.8rem; }
         .nav-item.active { color: #764ba2; font-weight: bold; }
@@ -115,16 +103,16 @@ $json_bar_data = json_encode($bar_data);
                 </form>
 
                 <div class="chat-container">
-                    <?php if (isset($_SESSION['chat_log']) && count($_SESSION['chat_log']) > 0): ?>
-                        <?php foreach ($_SESSION['chat_log'] as $log): ?>
-                            <div class="chat-time"><?php echo $log['time']; ?>のアドバイス</div>
-                            <div class="chat-bubble ai-msg">
-                                <?php echo nl2br(htmlspecialchars($log['comment'])); ?>
+                    <?php if (!empty($chat_logs)): ?>
+                        <?php foreach ($chat_logs as $log): ?>
+                            <div class="chat-time"><?php echo $log['time_str']; ?>のアドバイス</div>
+                            <div class="chat-bubble">
+                                <?php echo nl2br(htmlspecialchars($log['advice'])); ?>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <div style="text-align:center; color: #bbb; margin-top: 50px;">
-                            診断を受けると、ここにアドバイスが蓄積されます。
+                            診断を受けると、前日分も含めここにアドバイスが蓄積されます。
                         </div>
                     <?php endif; ?>
                 </div>
@@ -159,25 +147,43 @@ $json_bar_data = json_encode($bar_data);
                         <button type="submit" style="background: #764ba2;">記録する</button>
                     </form>
                 </div>
+
+                <div class="card">
+                    <h3 style="margin-top:0; font-size: 1.1rem; color: #2c3e50;">💰 最近の支出履歴</h3>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <?php foreach ($recent_transactions as $item): ?>
+                            <li style="padding: 12px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <span style="font-size: 0.75rem; color: #999;"><?php echo $item['date_str']; ?></span><br>
+                                    <strong><?php echo htmlspecialchars($item['description']); ?></strong>
+                                    <span style="color: #ff9800; font-size: 0.8rem;">★<?php echo $item['satisfaction']; ?></span>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: bold;"><?php echo number_format($item['amount']); ?>円</div>
+                                    <a href="delete_action.php?id=<?php echo $item['id']; ?>" 
+                                       onclick="return confirm('この記録を削除しますか？')" 
+                                       style="font-size: 0.7rem; color: #e74c3c; text-decoration: none;">削除</a>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <?php if (empty($recent_transactions)): ?>
+                        <p style="text-align:center; color:#ccc; font-size: 0.9rem;">履歴がありません</p>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
 
         <div class="swiper-slide" style="background: white;">
             <div class="container">
                 <h2 style="text-align:center; color: #2c3e50;">📊 分析レポート</h2>
-                
                 <div class="card">
                     <h3 style="font-size: 1rem; color: #666; margin-top: 0;">満足度別の支出（合計額）</h3>
-                    <div style="height: 250px;">
-                        <canvas id="pieChart"></canvas>
-                    </div>
+                    <div style="height: 250px;"><canvas id="pieChart"></canvas></div>
                 </div>
-
                 <div class="card">
                     <h3 style="font-size: 1rem; color: #666; margin-top: 0;">直近1週間の支出推移</h3>
-                    <div style="height: 250px;">
-                        <canvas id="barChart"></canvas>
-                    </div>
+                    <div style="height: 250px;"><canvas id="barChart"></canvas></div>
                 </div>
             </div>
         </div>
@@ -193,13 +199,9 @@ $json_bar_data = json_encode($bar_data);
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialTab = urlParams.get('slide') ? parseInt(urlParams.get('slide')) : 1;
-    // スライドの設定
     const swiper = new Swiper('.swiper', {
-    initialSlide: initialTab, 
-    speed: 400,
+        initialSlide: 1, 
+        speed: 400,
         on: {
             slideChange: function () {
                 document.querySelectorAll('.nav-item').forEach((btn, i) => {
@@ -209,7 +211,6 @@ $json_bar_data = json_encode($bar_data);
         }
     });
 
-    // ドーナツグラフ
     new Chart(document.getElementById('pieChart'), {
         type: 'doughnut',
         data: {
@@ -223,7 +224,6 @@ $json_bar_data = json_encode($bar_data);
         options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
     });
 
-    // 棒グラフ
     new Chart(document.getElementById('barChart'), {
         type: 'bar',
         data: {
