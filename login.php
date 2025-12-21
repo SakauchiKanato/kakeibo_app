@@ -100,15 +100,26 @@
     </style>
 </head>
 <body>
-<form method="POST" action="./login_action.php">
+<div class="login-card">
+    <h2>ログイン</h2>
+    <form method="POST" action="./login_action.php">
+        <?php if(isset($_GET['error'])): ?>
+            <p style="color: #e74c3c; font-weight: bold;">メールアドレスかパスワードが違います</p>
+        <?php endif; ?>
+        
+        <div class="input-group">
+            <label>メールアドレス</label>
+            <input type="text" name="emf" required>
+        </div>
+        
+        <div class="input-group">
+            <label>パスワード</label>
+            <input type="password" name="pwf" required>
+        </div>
 
-    <?php if(isset($_GET['error'])): ?>
-        <p style="color: #e74c3c; font-weight: bold;">メールアドレスかパスワードが違います</p>
-    <?php endif; ?>
-email:<input type="text" name="emf" size="40"><br>
-pw:<input type="password" name="pwf" size="40"><br>
-<input type="submit">
-</form>
-<p>*はじめての方は<a href="./register.php">こちら</a>から登録してください。</p>
+        <input type="submit" value="ログイン">
+    </form>
+    <p>*はじめての方は<a href="./register.php">こちら</a>から登録してください。</p>
+</div>
 </body>
 </html>
