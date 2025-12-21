@@ -39,5 +39,5 @@ $cmd = sprintf(
 );
 
 $_SESSION['ai_comment'] = shell_exec($cmd);
-header("Location: index.php");
+header("Location: index.php?slide=0");
 exit();

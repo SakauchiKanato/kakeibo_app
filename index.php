@@ -193,10 +193,13 @@ $json_bar_data = json_encode($bar_data);
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialTab = urlParams.get('slide') ? parseInt(urlParams.get('slide')) : 1;
     // スライドの設定
     const swiper = new Swiper('.swiper', {
-        initialSlide: 1,
-        speed: 400,
+    initialSlide: initialTab, 
+    speed: 400,
         on: {
             slideChange: function () {
                 document.querySelectorAll('.nav-item').forEach((btn, i) => {
