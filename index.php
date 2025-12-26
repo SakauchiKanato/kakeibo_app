@@ -15,35 +15,69 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $ems = $_SESSION['ems']; // ログインユーザーのメールアドレス
 
+// --- 予算の更新処理 ---
+if (isset($_POST['update_budget'])) {
+    $new_limit = (int)$_POST['monthly_limit'];
+    
+    // 現在の予算設定があるか確認
+    $sql_check = "SELECT 1 FROM budget_settings WHERE user_id = $1 AND setting_key = 'monthly_limit'";
+    $res_check = pg_query_params($dbconn, $sql_check, array($user_id));
+
+    if (pg_num_rows($res_check) > 0) {
+        // すでに設定があれば UPDATE
+        $sql_upd = "UPDATE budget_settings SET setting_value = $1 WHERE user_id = $2 AND setting_key = 'monthly_limit'";
+    } else {
+        // まだ設定がなければ INSERT
+        $sql_upd = "INSERT INTO budget_settings (user_id, setting_key, setting_value) VALUES ($2, 'monthly_limit', $1)";
+    }
+    
+    pg_query_params($dbconn, $sql_upd, array($new_limit, $user_id));
+    
+    // 更新を反映させるためにリロード
+    header('Location: index.php?t=' . time());
+    exit();
+}
+
+
 // --- AI相談ボタンが押された時の処理 ---
 if (isset($_POST['run_ai'])) {
     $py_file = __DIR__ . '/python/ask_ai.py';
+    $char_type = $_POST['char_type'] ?? 'default'; // ★追加：HTMLからキャラ設定を受け取る
 
-    // 1. 今日の支出の詳細をDBから取得（user_id=9などのログインユーザー分）
-    // ※テーブル名はご提示のデータに基づき「transactions」と仮定しています
+    // 1. 今日の支出の詳細をDBから取得
     $sql_today = "SELECT description, amount, satisfaction FROM transactions 
                   WHERE user_id = $1 AND date(created_at) = current_date";
     $res_today = pg_query_params($dbconn, $sql_today, array($user_id));
 
     $items_list = "";
-    $total_spent = 0;
+    $total_spent_today = 0; // 変数名が重複しないよう調整
 
     if (pg_num_rows($res_today) > 0) {
         while ($row = pg_fetch_assoc($res_today)) {
-            // Pythonが読みやすいように「内容(金額円, 満足度:X)」という形式にまとめる
             $items_list .= "・{$row['description']} ({$row['amount']}円, 満足度:{$row['satisfaction']}) \n";
-            $total_spent += (int)$row['amount'];
+            $total_spent_today += (int)$row['amount'];
         }
     } else {
         $items_list = "支出の記録はありません。";
-        $total_spent = 0;
     }
 
-    // 2. Pythonを実行（第1引数：支出リスト、第2引数：合計金額）
-    // これにより sys.argv[1] と sys.argv[2] に正しいデータが入ります
+    // ★重要：Pythonに渡すために「今の残り予算」をここで計算
+    $sql_sum_all = "SELECT SUM(amount) FROM transactions WHERE user_id = $1 AND date_trunc('month', created_at) = date_trunc('month', current_timestamp)";
+    $res_sum_all = pg_query_params($dbconn, $sql_sum_all, array($user_id));
+    $all_spent = pg_fetch_row($res_sum_all)[0] ?? 0;
+    
+    $sql_limit = "SELECT setting_value FROM budget_settings WHERE user_id = $1 AND setting_key = 'monthly_limit'";
+    $res_limit = pg_query_params($dbconn, $sql_limit, array($user_id));
+    $mon_limit = pg_fetch_row($res_limit)[0] ?? 30000;
+    
+    $remaining_for_ai = floor(($mon_limit / date('t') * date('j')) - $all_spent); // 繰り越し方式の残り金額
+
+    // 2. Pythonを実行（引数を整理）
     $command = "python3 " . escapeshellarg($py_file) . " " . 
                escapeshellarg($items_list) . " " . 
-               escapeshellarg($total_spent) . " 2>&1";
+               escapeshellarg($total_spent_today) . " " . 
+               escapeshellarg($char_type) . " " . 
+               escapeshellarg($remaining_for_ai) . " 2>&1";
     
     $advice_text = shell_exec($command);
 
@@ -53,7 +87,6 @@ if (isset($_POST['run_ai'])) {
         pg_query_params($dbconn, $sql_save, array($user_id, trim($advice_text)));
     }
 
-    // AI画面を表示
     header('Location: index.php?slide=0&t=' . time());
     exit();
 }
@@ -64,21 +97,34 @@ $res_ai = pg_query_params($dbconn, $sql_ai, array($user_id));
 $chat_logs = pg_fetch_all($res_ai) ?: [];
 
 // --- 4. 計算ロジック（ホーム画面用） ---
+// ① 今月の支出合計を取得（今日使った分も含まれます）
 $sql_sum = "SELECT SUM(amount) FROM transactions WHERE user_id = $1 AND date_trunc('month', created_at) = date_trunc('month', current_timestamp)";
 $res_sum = pg_query_params($dbconn, $sql_sum, array($user_id));
 $total_spent = pg_fetch_row($res_sum)[0] ?? 0;
 
+// ② 月の総予算を取得
 $sql_budget = "SELECT setting_value FROM budget_settings WHERE user_id = $1 AND setting_key = 'monthly_limit'";
 $res_budget = pg_query_params($dbconn, $sql_budget, array($user_id));
 $monthly_limit = pg_fetch_row($res_budget)[0] ?? 30000;
 
-$remaining_days = date('t') - date('j') + 1;
-$today_budget = floor(($monthly_limit - $total_spent) / $remaining_days);
+// ③ 繰り越しロジックの計算
+$total_days = date('t');    // 月の総日数 (例: 31)
+$current_day = date('j');   // 今日は何日目か (例: 22)
 
+// 1日あたりの割当予算
+$daily_allowance = $monthly_limit / $total_days;
+
+// 今日までに「使ってよかった累計予算」 (1日分 × 今日までの日数)
+$cumulative_budget = $daily_allowance * $current_day;
+
+// 今日の残り = 今日までの累計予算 - 今月使った合計
+// これで、昨日までの節約分が自動的に今日の残高にプラスされます
+$today_remaining = floor($cumulative_budget - $total_spent);
+
+// (オプション) 今日の支出だけを別途表示したい場合に備えて取得しておく
 $sql_today_spent = "SELECT SUM(amount) FROM transactions WHERE user_id = $1 AND date(created_at) = current_date";
 $res_today_spent = pg_query_params($dbconn, $sql_today_spent, array($user_id));
 $today_spent = pg_fetch_row($res_today_spent)[0] ?? 0;
-$today_remaining = $today_budget - $today_spent;
 
 // --- 5. グラフデータ集計 ---
 $sql_pie = "SELECT satisfaction, SUM(amount) as sum_amount FROM transactions WHERE user_id = $1 GROUP BY satisfaction";
@@ -165,7 +211,17 @@ if ($res_cal) {
                 <h2 style="text-align:center;">🤖 AI相談履歴</h2>
                 <div class="card" style="border: 2px solid #764ba2; text-align: center;">
                     <p style="margin:0 0 10px; font-weight:bold;">最新の状況をGeminiに相談</p>
-                    <form action="" method="post"> <button type="submit" name="run_ai" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; border:none; border-radius:25px; cursor:pointer;">✨ AIにアドバイスを貰う</button>
+                    <form action="" method="post"> 
+                        <select name="char_type" style="padding: 10px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #ddd; width: 90%;">
+                            <option value="default">👤 標準（丁寧なアドバイス）</option>
+                            <option value="strict">🔥 鬼コンサル（厳しい指摘）</option>
+                            <option value="sister">🌸 優しいお姉さん（共感・褒める）</option>
+                            <option value="detective">🔍 名探偵（鋭い分析）</option>
+                        </select>
+
+                        <button type="submit" name="run_ai" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; border:none; border-radius:25px; cursor:pointer;">
+                            ✨ AIにアドバイスを貰う
+                        </button>
                     </form>
                 </div>
                 <div class="chat-container">
@@ -191,6 +247,23 @@ if ($res_cal) {
                 <div class="budget-box">
                     <div style="font-size: 1.1rem; opacity: 0.9;">今日使えるお金</div>
                     <div style="font-size: 3.5rem; font-weight: bold;"><?php echo number_format($today_remaining); ?>円</div>
+                </div>
+                <div class="card" style="background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;">
+                    <h3 style="margin-top: 0; font-size: 1rem; color: #555;">⚙️ 予算設定</h3>
+                    <form action="" method="post" style="display: flex; gap: 10px; align-items: center;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.8rem; color: #888;">今月の総予算 (円)</label>
+                            <input type="number" name="monthly_limit" value="<?php echo $monthly_limit; ?>" 
+                                  style="font-size: 1.1rem; font-weight: bold; border: none; border-bottom: 2px solid #764ba2; border-radius: 0; padding: 5px 0;">
+                        </div>
+                        <button type="submit" name="update_budget" 
+                                style="width: auto; background: #f0f2f5; color: #764ba2; border: 1px solid #764ba2; padding: 8px 15px; font-size: 0.9rem;">
+                            保存
+                        </button>
+                    </form>
+                    <p style="font-size: 0.75rem; color: #999; margin-top: 10px;">
+                        ※予算を変更すると「今日使えるお金」が自動で再計算されます。
+                    </p>
                 </div>
                 <div class="card">
                     <h3 style="margin:0 0 10px;">支出を記録</h3>
