@@ -284,7 +284,7 @@ if ($res_cal) {
 
 <nav class="bottom-nav">
     <div class="nav-item" onclick="mainSwiper.slideTo(0)">💬 AI</div>
-    <div class="nav-item active" onclick="mainSwiper.slideTo(1)">🏠 ホーム</div>
+    <div class="nav-item" onclick="mainSwiper.slideTo(1)">🏠 ホーム</div>
     <div class="nav-item" onclick="mainSwiper.slideTo(2)">📈 分析</div>
 </nav>
 
