@@ -244,40 +244,30 @@ if ($res_cal) {
 
         <div class="swiper-slide">
             <div class="container">
-                <div class="budget-box">
+                <div class="budget-box" style="position: relative;">
+                    <button type="button" onclick="openBudgetModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; width: auto; padding: 0; z-index: 10;">
+                        ⚙️
+                    </button>
                     <div style="font-size: 1.1rem; opacity: 0.9;">今日使えるお金</div>
                     <div style="font-size: 3.5rem; font-weight: bold;"><?php echo number_format($today_remaining); ?>円</div>
                 </div>
-                <div class="card" style="background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;">
-                    <h3 style="margin-top: 0; font-size: 1rem; color: #555;">⚙️ 予算設定</h3>
-                    <form action="" method="post" style="display: flex; gap: 10px; align-items: center;">
-                        <div style="flex: 1;">
-                            <label style="font-size: 0.8rem; color: #888;">今月の総予算 (円)</label>
-                            <input type="number" name="monthly_limit" value="<?php echo $monthly_limit; ?>" 
-                                  style="font-size: 1.1rem; font-weight: bold; border: none; border-bottom: 2px solid #764ba2; border-radius: 0; padding: 5px 0;">
-                        </div>
-                        <button type="submit" name="update_budget" 
-                                style="width: auto; background: #f0f2f5; color: #764ba2; border: 1px solid #764ba2; padding: 8px 15px; font-size: 0.9rem;">
-                            保存
-                        </button>
-                    </form>
-                    <p style="font-size: 0.75rem; color: #999; margin-top: 10px;">
-                        ※予算を変更すると「今日使えるお金」が自動で再計算されます。
-                    </p>
-                </div>
+
                 <div class="card">
                     <h3 style="margin:0 0 10px;">支出を記録</h3>
                     <form action="add_action.php" method="post">
                         <input type="text" name="description" placeholder="何に使った？" required>
                         <input type="number" name="amount" placeholder="金額" required>
                         <select name="satisfaction">
-                            <option value="5">星5：最高！</option><option value="4">星4：満足</option>
-                            <option value="3" selected>星3：普通</option><option value="2">星2：微妙</option>
+                            <option value="5">星5：最高！</option>
+                            <option value="4">星4：満足</option>
+                            <option value="3" selected>星3：普通</option>
+                            <option value="2">星2：微妙</option>
                             <option value="1">星1：後悔...</option>
                         </select>
                         <button type="submit" style="background: #764ba2; color:white; border:none;">記録する</button>
                     </form>
                 </div>
+
                 <div class="card"><div id="calendar"></div></div>
             </div>
         </div>
@@ -316,6 +306,24 @@ if ($res_cal) {
             </select>
             <button type="submit" style="background: #764ba2; color: white; border: none;">更新する</button>
             <button type="button" onclick="closeModal()" style="background: #eee; border: none;">キャンセル</button>
+        </form>
+    </div>
+</div>
+
+<div id="budgetModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 12000; align-items: center; justify-content: center;">
+    <div class="modal-content">
+        <h3 style="margin-top: 0;">⚙️ 予算設定</h3>
+        <form action="" method="post">
+            <label style="font-size: 0.8rem; color: #888;">今月の総予算 (円)</label>
+            <input type="number" name="monthly_limit" value="<?php echo $monthly_limit; ?>" required 
+                  style="font-size: 1.2rem; font-weight: bold; border: none; border-bottom: 2px solid #764ba2; border-radius: 0; margin-bottom: 20px;">
+            
+            <button type="submit" name="update_budget" style="background: #764ba2; color: white; border: none;">
+                予算を更新する
+            </button>
+            <button type="button" onclick="closeBudgetModal()" style="background: #eee; border: none; color: #666; margin-top: 10px;">
+                キャンセル
+            </button>
         </form>
     </div>
 </div>

@@ -1,17 +1,33 @@
 let mainSwiper;
 
+window.openBudgetModal = function() {
+    document.getElementById('budgetModal').style.display = 'flex';
+};
+
+window.closeBudgetModal = function() {
+    document.getElementById('budgetModal').style.display = 'none';
+};
+
 window.closeModal = function() {
     document.getElementById('editModal').style.display = 'none';
 };
 
+// 画面のどこかをクリックした時にモーダルを閉じる処理（既存のものがあれば上書き）
+window.onclick = function(event) {
+    const bModal = document.getElementById('budgetModal');
+    const eModal = document.getElementById('editModal');
+    if (event.target == bModal) closeBudgetModal();
+    if (event.target == eModal) closeModal();
+};
+
 document.addEventListener('DOMContentLoaded', function() {
-    // URLから slide パラメータを取得
+    // ★ここを追加：URLからどのスライドを表示するか決める処理
     const urlParams = new URLSearchParams(window.location.search);
     const startSlide = urlParams.get('slide') !== null ? parseInt(urlParams.get('slide')) : 1;
 
     // Swiper初期化
     mainSwiper = new Swiper('.swiper', {
-        initialSlide: startSlide, // URLに従って 0 か 1 を決める
+        initialSlide: startSlide, // さっき取得した startSlide を使う
         speed: 400,
         on: {
             slideChange: function () {
