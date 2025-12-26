@@ -21,21 +21,35 @@ window.onclick = function(event) {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-    // ★ここを追加：URLからどのスライドを表示するか決める処理
+    // 1. URLからどのスライドを表示するか決める処理
     const urlParams = new URLSearchParams(window.location.search);
     const startSlide = urlParams.get('slide') !== null ? parseInt(urlParams.get('slide')) : 1;
 
-    // Swiper初期化
+    // メニューの色を更新する共通関数
+    const updateNavUI = (index) => {
+        const btns = document.querySelectorAll('.nav-item');
+        btns.forEach((btn, i) => btn.classList.toggle('active', i === index));
+    };
+
+    // 2. Swiper初期化
     mainSwiper = new Swiper('.swiper', {
-        initialSlide: startSlide, // さっき取得した startSlide を使う
+        initialSlide: startSlide, 
         speed: 400,
         on: {
             slideChange: function () {
-                const btns = document.querySelectorAll('.nav-item');
-                btns.forEach((btn, i) => btn.classList.toggle('active', i === this.activeIndex));
+                updateNavUI(this.activeIndex);
             }
         }
     });
+
+
+    updateNavUI(startSlide);
+    // ★ここを追加：読み込みが終わったら、URLから「?slide=0」などのパラメータを消す
+    // これにより、次に「更新」ボタンを押した時はデフォルトのホーム(1)が開くようになります
+    if (urlParams.has('slide')) {
+        const cleanUrl = window.location.pathname; // パラメータなしのURLを取得
+        window.history.replaceState({}, document.title, cleanUrl);
+    }
 
     // 2. カレンダー初期化
     const calendarEl = document.getElementById('calendar');
