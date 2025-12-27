@@ -1,0 +1,74 @@
+.goal-item.completed {
+    opacity: 0.8;
+    border-left: 5px solid var(--secondary);
+}
+
+.goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.goal-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.goal-amount {
+    text-align: right;
+}
+
+.current-amount {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.target-amount {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.progress-container {
+    margin: 1rem 0;
+}
+
+.progress-bar {
+    height: 10px;
+    background: var(--bg);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 5px;
+    transition: width 0.5s ease-out;
+}
+
+.goal-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+}
+
+.deadline-badge {
+    background: var(--bg);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.btn-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}

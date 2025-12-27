@@ -1,0 +1,83 @@
+.recurring-item.inactive {
+    opacity: 0.6;
+    filter: grayscale(0.5);
+}
+
+.expense-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.expense-info {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.category-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--bg);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.expense-details h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.expense-meta {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    display: flex;
+    gap: 0.75rem;
+}
+
+.expense-amount {
+    text-align: right;
+}
+
+.amount-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.frequency-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    background: var(--bg);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 0.25rem;
+}
+
+.next-occurrence {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.occurrence-date {
+    font-weight: 600;
+    color: var(--secondary);
+}
+
+.btn-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}

@@ -1,122 +1,510 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
 
-/* 全体のフォントと背景 */
-body {
-    font-family: 'Inter', 'Helvetica Neue', Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    background-attachment: fixed;
-    color: #333;
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* カード形式のコンテナ */
+:root {
+    --primary: #4a90e2;
+    --primary-dark: #357abd;
+    --secondary: #50c878;
+    --accent: #ff6b6b;
+    --warning: #ffa500;
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --border: #e1e8ed;
+    --shadow: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] {
+    --primary: #5b9def;
+    --primary-dark: #4a90e2;
+    --secondary: #5fd68a;
+    --accent: #ff7b7b;
+    --warning: #ffb733;
+    --bg: #1a1d2e;
+    --card-bg: #252837;
+    --text: #e4e6eb;
+    --text-light: #a8adb7;
+    --border: #3a3f51;
+    --shadow: rgba(0, 0, 0, 0.3);
+}
+
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* ヘッダー */
+.header {
+    background: var(--card-bg);
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+    border-radius: 0 0 16px 16px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.user-info {
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+.logout-btn {
+    padding: 0.5rem 1.25rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.logout-btn:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.theme-toggle {
+    padding: 0.5rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: all 0.2s;
+    margin-left: 0.5rem;
+}
+
+.theme-toggle:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.info-btn {
+    padding: 0.5rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: all 0.2s;
+    margin-left: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.info-btn:hover {
+    background: var(--secondary);
+    color: white;
+    border-color: var(--secondary);
+}
+
+/* カード */
 .card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 24px;
-    padding: 24px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    transition: all 0.3s ease;
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px var(--shadow);
+    transition: all 0.2s;
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    box-shadow: 0 4px 12px var(--shadow);
 }
 
-/* 予算表示をインパクトのあるデザインに */
-.budget-box {
-    text-align: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+/* フォーム共通 */
+input,
+select,
+button {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.9375rem;
+    transition: all 0.2s;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: white;
+}
+
+button {
+    background: var(--primary);
     color: white;
-    padding: 35px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button:hover {
+    background: var(--primary-dark);
+}
+
+/* モーダル共通 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 11000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 420px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.modal-content h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+}
+
+.modal-content label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* 浮遊追加ボタン共通 */
+.add-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
     border-radius: 28px;
-    box-shadow: 0 10px 40px rgba(118, 75, 162, 0.3);
+    font-size: 24px;
+    box-shadow: 0 4px 16px rgba(74, 144, 226, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: transform 0.2s;
+}
+
+.add-btn:hover {
+    transform: scale(1.1);
+}
+
+/* index.php 固有スタイル */
+body.index-page {
+    overflow: hidden;
+}
+
+.swiper {
+    width: 100%;
+    height: calc(100vh - 70px);
+}
+
+.swiper-slide {
+    overflow-y: auto;
+    padding: 1.5rem;
+    padding-bottom: 100px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.budget-box {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    color: white;
+}
+
+.budget-label {
+    font-size: 0.875rem;
+    opacity: 0.95;
+    margin-bottom: 0.5rem;
 }
 
 .budget-amount {
-    font-size: 2.8rem;
+    font-size: 2.5rem;
     font-weight: 700;
-    margin: 10px 0;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    margin: 0.5rem 0;
 }
 
-/* テーブルをオシャレに */
-table {
+.progress-bar {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-top: 10px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 1rem;
 }
 
-th {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    color: #555;
-    font-weight: 600;
-    padding: 14px 12px;
-    text-align: left;
-    font-size: 0.85rem;
-    border-bottom: 2px solid #667eea;
+.progress-fill {
+    height: 100%;
+    background: white;
+    border-radius: 10px;
+    transition: width 0.5s ease;
 }
 
-td {
-    padding: 16px 12px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.95rem;
-}
-
-tr {
-    transition: all 0.3s ease;
-}
-
-tr:hover {
-    background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
-    transform: scale(1.01);
-}
-
-/* 満足度の星の色 */
-.stars {
-    color: #ffca28;
-    letter-spacing: 2px;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-
-/* 削除ボタンをタグ風に */
-.delete-btn {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    color: white;
-    padding: 6px 14px;
-    border-radius: 20px;
-    text-decoration: none;
+.budget-info {
     font-size: 0.75rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(238, 90, 111, 0.3);
+    margin-top: 0.75rem;
+    opacity: 0.9;
 }
 
-.delete-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(238, 90, 111, 0.4);
-}
-
-/* 検索窓のスタイル */
-#historySearch {
-    width: 100%;
-    padding: 12px 16px;
-    margin-bottom: 15px;
-    border: 2px solid #e0e0e0;
+.chat-bubble {
+    background: var(--bg);
+    border: 1px solid var(--border);
     border-radius: 12px;
-    box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
-    transition: all 0.3s ease;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    line-height: 1.6;
 }
 
-#historySearch:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+.chat-time {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 70px;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border);
+    display: flex;
+    z-index: 1000;
+    box-shadow: 0 -2px 8px var(--shadow);
+}
+
+.nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.nav-item.active {
+    color: var(--primary);
+}
+
+.nav-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+#alertContainer {
+    margin-bottom: 1rem;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.alert-warning {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    color: #856404;
+}
+
+.alert-danger {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.receipt-upload {
+    background: var(--bg);
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+}
+
+.receipt-upload:hover {
+    border-color: var(--primary);
+}
+
+.receipt-preview {
+    margin-top: 1rem;
+    display: none;
+}
+
+.receipt-preview img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.ocr-status {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background: var(--bg);
+}
+
+.quick-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.quick-link {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s;
+}
+
+.quick-link:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.quick-link-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.quick-link-text {
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+/* FullCalendar カスタマイズ */
+.fc {
+    background: var(--card-bg);
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+    border-color: var(--border);
+}
+
+.fc-col-header-cell {
+    background: var(--bg);
+    font-weight: 600;
+    color: var(--text);
+}
+
+.fc-daygrid-day-number {
+    color: var(--text);
+}
+
+.fc-event {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.fc-button {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+.fc-button:hover {
+    background: var(--primary-dark) !important;
+}
+
+.fc-daygrid-day {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.fc-daygrid-day:hover {
+    background-color: var(--bg) !important;
+}
+
+.fc-day-today {
+    background-color: rgba(74, 144, 226, 0.1) !important;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-light);
+    text-decoration: none;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.back-link:hover {
+    color: var(--primary);
 }

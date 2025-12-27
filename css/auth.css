@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.login-container,
+.register-container {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo-icon {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+}
+
+.logo-text {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+}
+
+.error {
+    background: #fee;
+    border: 1px solid #fcc;
+    color: #c33;
+    padding: 0.875rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    font-weight: 500;
+    font-size: 0.9375rem;
+}
+
+input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.2s;
+}
+
+input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+button {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.register-link,
+.login-link {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.9375rem;
+    color: #7f8c8d;
+}
+
+.register-link a,
+.login-link a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.register-link a:hover,
+.login-link a:hover {
+    text-decoration: underline;
+}

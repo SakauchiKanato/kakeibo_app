@@ -21,16 +21,9 @@ $current_limit = $row[0] ?? 30000; // 現在の設定がない場合は30,000を
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>予算設定 - Money Partner (マネ・パト)</title>
-    <style>
-        body { font-family: sans-serif; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 350px; text-align: center; }
-        h2 { color: #2c3e50; margin-bottom: 20px; }
-        input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1.2rem; text-align: center; margin-bottom: 20px; }
-        button { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .back-link { display: block; margin-top: 20px; color: #777; text-decoration: none; font-size: 0.9rem; }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="settings-page">
 
 <div class="card">
     <h2>月の予算設定</h2>
