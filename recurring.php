@@ -44,7 +44,7 @@ function frequency_to_japanese($freq) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>定期支出管理 - 家計簿AI</title>
+    <title>定期支出管理 - Money Partner (マネ・パト)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
         

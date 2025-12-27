@@ -20,7 +20,7 @@ $current_limit = $row[0] ?? 30000; // 現在の設定がない場合は30,000を
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>予算設定 - 家計簿AI</title>
+    <title>予算設定 - Money Partner (マネ・パト)</title>
     <style>
         body { font-family: sans-serif; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
         .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 350px; text-align: center; }

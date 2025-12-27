@@ -37,7 +37,7 @@ if (isset($_POST['login'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ログイン - 家計簿AI</title>
+    <title>ログイン - Money Partner (マネ・パト)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
         
@@ -168,7 +168,7 @@ if (isset($_POST['login'])) {
     <div class="login-container">
         <div class="logo">
             <div class="logo-icon">💰</div>
-            <div class="logo-text">家計簿AI</div>
+            <div class="logo-text">Money Partner (マネ・パト)</div>
         </div>
         
         <h2>ログイン</h2>

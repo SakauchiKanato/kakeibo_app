@@ -26,7 +26,7 @@ $goals = pg_fetch_all($res_goals) ?: [];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>目標設定 - 家計簿AI</title>
+    <title>目標設定 - Money Partner (マネ・パト)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
         
@@ -350,7 +350,7 @@ $goals = pg_fetch_all($res_goals) ?: [];
 
 <div class="header">
     <div class="header-left">
-        <a href="index.php" class="logo">💰 家計簿AI</a>
+        <a href="index.php" class="logo">💰 Money Partner (マネ・パト)</a>
         <div class="user-info"><?php echo htmlspecialchars($ems); ?> さん</div>
     </div>
     <div style="display: flex; align-items: center;">

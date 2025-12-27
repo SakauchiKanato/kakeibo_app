@@ -232,7 +232,7 @@ if (isset($_GET['search']) || isset($_GET['filter_category']) || isset($_GET['da
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💰 家計簿AI</title>
+    <title>💰 Money Partner (マネ・パト)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -730,7 +730,7 @@ if (isset($_GET['search']) || isset($_GET['filter_category']) || isset($_GET['da
         <div class="swiper-slide">
             <div class="header">
                 <div class="header-left">
-                    <div class="logo">💰 家計簿AI</div>
+                    <div class="logo">💰 Money Partner (マネ・パト)</div>
                     <div class="user-info"><?php echo htmlspecialchars($ems); ?> さん</div>
                 </div>
                 <div style="display: flex; align-items: center;">
@@ -774,7 +774,7 @@ if (isset($_GET['search']) || isset($_GET['filter_category']) || isset($_GET['da
         <div class="swiper-slide">
             <div class="header">
                 <div class="header-left">
-                    <div class="logo">💰 家計簿AI</div>
+                    <div class="logo">💰 Money Partner (マネ・パト)</div>
                     <div class="user-info"><?php echo htmlspecialchars($ems); ?> さん</div>
                 </div>
                 <div style="display: flex; align-items: center;">
@@ -858,7 +858,7 @@ if (isset($_GET['search']) || isset($_GET['filter_category']) || isset($_GET['da
         <div class="swiper-slide">
             <div class="header">
                 <div class="header-left">
-                    <div class="logo">💰 家計簿AI</div>
+                    <div class="logo">💰 Money Partner (マネ・パト)</div>
                     <div class="user-info"><?php echo htmlspecialchars($ems); ?> さん</div>
                 </div>
                 <div style="display: flex; align-items: center;">
