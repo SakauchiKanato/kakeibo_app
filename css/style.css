@@ -164,7 +164,9 @@ input:focus,
 select:focus {
     outline: none;
     border-color: var(--primary);
-    background: white;
+    background: var(--bg);
+    /* white から var(--bg) に変更してコントラストを維持 */
+    box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
 }
 
 button {
