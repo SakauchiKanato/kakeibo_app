@@ -18,10 +18,12 @@ $user_id = $_SESSION['user_id'];
 $amount = $_POST['amount'];
 $description = $_POST['description'];
 $satisfaction = (int)$_POST['satisfaction'];
+$category_id = isset($_POST['category_id']) ? (int)$_POST['category_id'] : 9;
+$date = isset($_POST['date']) && !empty($_POST['date']) ? $_POST['date'] : date('Y-m-d');
 
-// SQL実行：データを保存する
-$sql = "INSERT INTO transactions (user_id, amount, description, satisfaction) VALUES ($1, $2, $3, $4)";
-$result = pg_query_params($dbconn, $sql, array($user_id, $amount, $description, $satisfaction));
+// SQL実行：データを保存する（日付指定可能）
+$sql = "INSERT INTO transactions (user_id, amount, description, satisfaction, category_id, created_at) VALUES ($1, $2, $3, $4, $5, $6)";
+$result = pg_query_params($dbconn, $sql, array($user_id, $amount, $description, $satisfaction, $category_id, $date . ' ' . date('H:i:s')));
 
 if (!$result) {
     // 詳細なエラーを表示するように一時的に変更
