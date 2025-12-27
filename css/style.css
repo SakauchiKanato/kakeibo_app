@@ -1,7 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 /* 全体のフォントと背景 */
 body {
-    font-family: 'Helvetica Neue', Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
-    background-color: #f0f2f5;
+    font-family: 'Inter', 'Helvetica Neue', Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
     color: #333;
     max-width: 600px;
     margin: 0 auto;
@@ -10,11 +13,19 @@ body {
 
 /* カード形式のコンテナ */
 .card {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
     margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
 }
 
 /* 予算表示をインパクトのあるデザインに */
@@ -22,14 +33,16 @@ body {
     text-align: center;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 30px;
-    border-radius: 20px;
+    padding: 35px;
+    border-radius: 28px;
+    box-shadow: 0 10px 40px rgba(118, 75, 162, 0.3);
 }
 
 .budget-amount {
-    font-size: 2.5rem;
-    font-weight: bold;
+    font-size: 2.8rem;
+    font-weight: 700;
     margin: 10px 0;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
 /* テーブルをオシャレに */
@@ -41,54 +54,69 @@ table {
 }
 
 th {
-    background-color: #f8f9fa;
-    color: #777;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #555;
     font-weight: 600;
-    padding: 12px;
+    padding: 14px 12px;
     text-align: left;
     font-size: 0.85rem;
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid #667eea;
 }
 
 td {
-    padding: 15px 12px;
+    padding: 16px 12px;
     border-bottom: 1px solid #eee;
     font-size: 0.95rem;
 }
 
+tr {
+    transition: all 0.3s ease;
+}
+
 tr:hover {
-    background-color: #fdfdfd;
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+    transform: scale(1.01);
 }
 
 /* 満足度の星の色 */
 .stars {
     color: #ffca28;
     letter-spacing: 2px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 /* 削除ボタンをタグ風に */
 .delete-btn {
-    background: #ffebee;
-    color: #e53935;
-    padding: 4px 12px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: white;
+    padding: 6px 14px;
     border-radius: 20px;
     text-decoration: none;
     font-size: 0.75rem;
-    font-weight: bold;
-    transition: 0.3s;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(238, 90, 111, 0.3);
 }
 
 .delete-btn:hover {
-    background: #e53935;
-    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(238, 90, 111, 0.4);
 }
 
 /* 検索窓のスタイル */
 #historySearch {
     width: 100%;
-    padding: 10px;
+    padding: 12px 16px;
     margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
     box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s ease;
+}
+
+#historySearch:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }

@@ -1,125 +1,199 @@
+<?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+session_start();
+
+if (isset($_POST['login'])) {
+    $email = $_POST['email']; // form name="email"
+    $password = $_POST['password']; // form name="password"
+    
+    $dbconn = pg_connect("host=localhost dbname=knt416 user=knt416 password=nFb55bRP") or die('接続失敗');
+    
+    // ゼミのサーバーのカラム名（user_id, email, password_hash）に合わせる
+    $sql = "SELECT user_id, email, password_hash FROM users WHERE email = $1";
+    $result = pg_query_params($dbconn, $sql, array($email));
+    
+    if (!$result) {
+        $error = "データベースエラー: " . pg_last_error($dbconn);
+    } else {
+        if ($row = pg_fetch_assoc($result)) {
+            if (password_verify($password, $row['password_hash'])) {
+                $_SESSION['user_id'] = $row['user_id'];
+                $_SESSION['ems'] = $row['email'];
+                header('Location: index.php');
+                exit();
+            } else {
+                $error = "パスワードが正しくありません";
+            }
+        } else {
+            $error = "ユーザーが見つかりません";
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ログイン - 家計簿AIアドバイザー</title>
+    <title>ログイン - 家計簿AI</title>
     <style>
-        /* メイン画面と共通の基本スタイル */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
+            padding: 1rem;
         }
-
-        .login-card {
+        
+        .login-container {
             background: white;
-            padding: 40px 30px;
             border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            padding: 3rem 2.5rem;
             width: 100%;
-            max-width: 350px;
-            text-align: center;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
-
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .logo-icon {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .logo-text {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
         h2 {
-            margin-bottom: 30px;
+            text-align: center;
             color: #2c3e50;
+            margin-bottom: 2rem;
             font-size: 1.5rem;
         }
-
-        .input-group {
-            text-align: left;
-            margin-bottom: 20px;
+        
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 0.875rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
         }
-
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
         label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-            color: #666;
-            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 0.9375rem;
         }
-
-        input[type="text"],
-        input[type="password"] {
+        
+        input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-sizing: border-box; /* 幅を100%に収める */
+            padding: 0.875rem 1rem;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
             font-size: 1rem;
-            transition: border-color 0.3s;
+            font-family: 'Noto Sans JP', sans-serif;
+            transition: all 0.2s;
         }
-
+        
         input:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-
-        input[type="submit"] {
+        
+        button {
             width: 100%;
-            padding: 14px;
+            padding: 1rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
-            transition: transform 0.2s, opacity 0.2s;
+            transition: all 0.2s;
+            font-family: 'Noto Sans JP', sans-serif;
         }
-
-        input[type="submit"]:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
-
-        p {
-            margin-top: 25px;
-            font-size: 0.85rem;
-            color: #777;
+        
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #7f8c8d;
+            font-size: 0.9375rem;
         }
-
-        a {
+        
+        .register-link a {
             color: #667eea;
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 600;
         }
-
-        a:hover {
+        
+        .register-link a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
-<div class="login-card">
-    <h2>ログイン</h2>
-    <form method="POST" action="./login_action.php">
-        <?php if(isset($_GET['error'])): ?>
-            <p style="color: #e74c3c; font-weight: bold;">メールアドレスかパスワードが違います</p>
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon">💰</div>
+            <div class="logo-text">家計簿AI</div>
+        </div>
+        
+        <h2>ログイン</h2>
+        
+        <?php if (isset($error)): ?>
+            <div class="error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
         
-        <div class="input-group">
-            <label>メールアドレス</label>
-            <input type="text" name="emf" required>
-        </div>
+        <form method="post">
+            <div class="form-group">
+                <label for="email">メールアドレス</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">パスワード</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" name="login">ログイン</button>
+        </form>
         
-        <div class="input-group">
-            <label>パスワード</label>
-            <input type="password" name="pwf" required>
+        <div class="register-link">
+            アカウントをお持ちでない方は <a href="register.php">新規登録</a>
         </div>
-
-        <input type="submit" value="ログイン">
-    </form>
-    <p>*はじめての方は<a href="./register.php">こちら</a>から登録してください。</p>
-</div>
+    </div>
 </body>
 </html>
