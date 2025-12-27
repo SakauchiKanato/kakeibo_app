@@ -15,6 +15,16 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $ems = $_SESSION['ems'];
 
+// 常に最新のユーザー名を取得するように強化
+$sql_user = "SELECT username FROM users WHERE user_id = $1";
+$res_user = pg_query_params($dbconn, $sql_user, array($user_id));
+$row_user = pg_fetch_assoc($res_user);
+$db_username = $row_user['username'] ?? '';
+
+// セッションを更新し、表示用変数を設定（空文字の場合はメールアドレスをフォールバック）
+$_SESSION['username'] = $db_username;
+$username = (!empty($db_username)) ? $db_username : $ems;
+
 // --- 予算の更新処理 ---
 if (isset($_POST['update_budget'])) {
     $new_limit = (int)$_POST['monthly_limit'];
@@ -64,11 +74,19 @@ if (isset($_POST['run_ai'])) {
     
     $remaining_for_ai = floor(($mon_limit / date('t') * date('j')) - $all_spent);
 
+    // AIに渡すユーザー名を確定（念のため再確認）
+    $current_username = (!empty($db_username)) ? $db_username : $ems;
+
+    // 日本語（マルチバイト文字）を安全に渡すため、Base64エンコードを使用
+    $encoded_items = base64_encode($items_list);
+    $encoded_name = base64_encode($current_username);
+
     $command = "python3 " . escapeshellarg($py_file) . " " . 
-               escapeshellarg($items_list) . " " . 
+               escapeshellarg($encoded_items) . " " . 
                escapeshellarg($total_spent_today) . " " . 
                escapeshellarg($char_type) . " " . 
-               escapeshellarg($remaining_for_ai) . " 2>&1";
+               escapeshellarg($remaining_for_ai) . " " . 
+               escapeshellarg($encoded_name) . " 2>&1";
     
     $advice_text = shell_exec($command);
 
@@ -250,7 +268,7 @@ if (isset($_GET['search']) || isset($_GET['filter_category']) || isset($_GET['da
             <div class="header">
                 <div class="header-left">
                     <div class="logo">💰 Money Partner (マネ・パト)</div>
-                    <div class="user-info"><?php echo htmlspecialchars($ems); ?> さん</div>
+                    <div class="user-info"><?php echo htmlspecialchars($username); ?> さん</div>
                 </div>
                 <div style="display: flex; align-items: center;">
                     <button class="info-btn" onclick="openHelpModal()" title="使いかたガイド">❓</button>
@@ -294,7 +312,7 @@ if (isset($_GET['search']) || isset($_GET['filter_category']) || isset($_GET['da
             <div class="header">
                 <div class="header-left">
                     <div class="logo">💰 Money Partner (マネ・パト)</div>
-                    <div class="user-info"><?php echo htmlspecialchars($ems); ?> さん</div>
+                    <div class="user-info"><?php echo htmlspecialchars($username); ?> さん</div>
                 </div>
                 <div style="display: flex; align-items: center;">
                     <button class="info-btn" onclick="openHelpModal()" title="使いかたガイド">❓</button>
@@ -378,7 +396,7 @@ if (isset($_GET['search']) || isset($_GET['filter_category']) || isset($_GET['da
             <div class="header">
                 <div class="header-left">
                     <div class="logo">💰 Money Partner (マネ・パト)</div>
-                    <div class="user-info"><?php echo htmlspecialchars($ems); ?> さん</div>
+                    <div class="user-info"><?php echo htmlspecialchars($username); ?> さん</div>
                 </div>
                 <div style="display: flex; align-items: center;">
                     <button class="info-btn" onclick="openHelpModal()" title="使いかたガイド">❓</button>

@@ -9,8 +9,8 @@ if (isset($_POST['login'])) {
     
     $dbconn = pg_connect("host=localhost dbname=knt416 user=knt416 password=nFb55bRP") or die('接続失敗');
     
-    // ゼミのサーバーのカラム名（user_id, email, password_hash）に合わせる
-    $sql = "SELECT user_id, email, password_hash FROM users WHERE email = $1";
+    // ゼミのサーバーのカラム名（user_id, email, password_hash, username）に合わせる
+    $sql = "SELECT user_id, email, password_hash, username FROM users WHERE email = $1";
     $result = pg_query_params($dbconn, $sql, array($email));
     
     if (!$result) {
@@ -20,6 +20,7 @@ if (isset($_POST['login'])) {
             if (password_verify($password, $row['password_hash'])) {
                 $_SESSION['user_id'] = $row['user_id'];
                 $_SESSION['ems'] = $row['email'];
+                $_SESSION['username'] = $row['username'] ?? '';
                 header('Location: index.php');
                 exit();
             } else {

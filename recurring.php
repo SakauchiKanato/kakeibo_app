@@ -8,10 +8,19 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$dbconn = pg_connect("host=localhost dbname=knt416 user=knt416 password=nFb55bRP") or die('接続失敗');
+
 $user_id = $_SESSION['user_id'];
 $ems = $_SESSION['ems'];
 
-$dbconn = pg_connect("host=localhost dbname=knt416 user=knt416 password=nFb55bRP") or die('接続失敗');
+// 最新のユーザー名を取得
+$sql_user = "SELECT username FROM users WHERE user_id = $1";
+$res_user = pg_query_params($dbconn, $sql_user, array($user_id));
+$row_user = pg_fetch_assoc($res_user);
+$db_username = $row_user['username'] ?? '';
+
+$_SESSION['username'] = $db_username;
+$username = (!empty($db_username)) ? $db_username : $ems;
 
 // カテゴリー一覧取得
 $sql_cats = "SELECT * FROM categories ORDER BY id";
@@ -53,7 +62,7 @@ function frequency_to_japanese($freq) {
 <div class="header">
     <div class="header-left">
         <a href="index.php" class="logo">💰 家計簿AI</a>
-        <div class="user-info"><?php echo htmlspecialchars($ems); ?> さん</div>
+        <div class="user-info"><?php echo htmlspecialchars($username); ?> さん</div>
     </div>
     <div style="display: flex; align-items: center;">
         <button class="info-btn" onclick="openHelpModal()" title="使いかたガイド">❓</button>
