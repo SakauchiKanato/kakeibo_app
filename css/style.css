@@ -1,48 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --primary: #4a90e2;
-    --primary-dark: #357abd;
-    --secondary: #50c878;
-    --accent: #ff6b6b;
-    --warning: #ffa500;
-    --bg: #f5f7fa;
-    --card-bg: #ffffff;
-    --text: #2c3e50;
-    --text-light: #7f8c8d;
-    --border: #e1e8ed;
-    --shadow: rgba(0, 0, 0, 0.08);
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --secondary: #10b981;
+    --secondary-dark: #059669;
+    --accent: #f43f5e;
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 [data-theme="dark"] {
-    --primary: #5b9def;
-    --primary-dark: #4a90e2;
-    --secondary: #5fd68a;
-    --accent: #ff7b7b;
-    --warning: #ffb733;
-    --bg: #1a1d2e;
-    --card-bg: #252837;
-    --text: #e4e6eb;
-    --text-light: #a8adb7;
-    --border: #3a3f51;
-    --shadow: rgba(0, 0, 0, 0.3);
+    --bg-main: #0b1120;
+    --bg-card: #1e293b;
+    --text: #f1f5f9;
+    --text-light: #94a3b8;
+    --border: #334155;
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
 }
 
 body {
-    font-family: 'Noto Sans JP', sans-serif;
-    background: var(--bg);
+    background-color: var(--bg-main);
     color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* ヘッダー */
 .header {
-    background: var(--card-bg);
+    background: var(--bg-card);
     padding: 0.75rem 1rem;
     display: flex;
     justify-content: space-between;
@@ -72,7 +71,7 @@ body {
 
 .logout-btn {
     padding: 0.5rem 1.25rem;
-    background: var(--bg);
+    background: var(--bg-main);
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
@@ -90,7 +89,7 @@ body {
 
 .theme-toggle {
     padding: 0.5rem;
-    background: var(--bg);
+    background: var(--bg-main);
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
@@ -108,7 +107,7 @@ body {
 
 .info-btn {
     padding: 0.5rem;
-    background: var(--bg);
+    background: var(--bg-main);
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
@@ -131,7 +130,7 @@ body {
 
 /* カード */
 .card {
-    background: var(--card-bg);
+    background: var(--bg-card);
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.25rem;
@@ -151,11 +150,11 @@ button {
     width: 100%;
     padding: 0.75rem 1rem;
     margin: 0.5rem 0;
-    background: var(--bg);
+    background: var(--bg-main);
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
-    font-family: 'Noto Sans JP', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 0.9375rem;
     transition: all 0.2s;
 }
@@ -164,8 +163,8 @@ input:focus,
 select:focus {
     outline: none;
     border-color: var(--primary);
-    background: var(--bg);
-    /* white から var(--bg) に変更してコントラストを維持 */
+    background: var(--bg-main);
+    /* white から var(--bg-main) に変更してコントラストを維持 */
     box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
 }
 
@@ -197,13 +196,15 @@ button:hover {
 }
 
 .modal-content {
-    background: var(--card-bg);
-    border-radius: 16px;
+    background: var(--bg-card);
+    border-radius: 20px;
     padding: 2rem;
     width: 90%;
-    max-width: 420px;
-    max-height: 85vh;
+    max-width: 440px;
+    max-height: 90vh;
     overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
 }
 
 .modal-content h3 {
@@ -312,7 +313,7 @@ body.index-page {
 }
 
 .chat-bubble {
-    background: var(--bg);
+    background: var(--bg-main);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 1rem 1.25rem;
@@ -331,7 +332,7 @@ body.index-page {
     bottom: 0;
     width: 100%;
     height: 70px;
-    background: var(--card-bg);
+    background: var(--bg-card);
     border-top: 1px solid var(--border);
     display: flex;
     z-index: 1000;
@@ -386,7 +387,7 @@ body.index-page {
 }
 
 .receipt-upload {
-    background: var(--bg);
+    background: var(--bg-main);
     border: 2px dashed var(--border);
     border-radius: 12px;
     padding: 1.5rem;
@@ -414,99 +415,310 @@ body.index-page {
     font-size: 0.875rem;
     padding: 0.5rem;
     border-radius: 8px;
-    background: var(--bg);
+    background: var(--bg-main);
 }
 
-.quick-links {
+/* クイックリンク v2 (横並び) */
+.quick-links-v2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+    justify-content: center;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.quick-link-v2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.25rem 0.75rem;
+    border-radius: 16px;
+    text-decoration: none;
+    color: white;
+    box-shadow: var(--shadow);
+    transition: all 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    min-width: 140px;
+    /* 極端に狭くなるのを防ぐ */
+    width: 100%;
+}
+
+.quick-link-v2:active {
+    transform: scale(0.96);
+}
+
+.quick-link-v2.blue {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+
+.quick-link-v2.orange {
+    background: linear-gradient(135deg, #fb923c, #f97316);
+}
+
+.ql-icon {
+    font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.25);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.ql-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.ql-text strong {
+    font-size: 0.95rem;
+}
+
+.ql-text small {
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+/* 既存カードの調整 (Dashboard) */
+.dashboard-section.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    justify-content: center;
+    /* 子要素を中央に寄せる */
+}
+
+/* リンクが1つ（片方のカードがない）の時に中央に寄せるための調整 */
+.dashboard-section.grid-2:has(> :only-child) {
+    display: flex;
+    justify-content: center;
+}
+
+.mini-card {
+    padding: 1.25rem !important;
+}
+
+.mini-cat-item {
+    margin-bottom: 1rem;
+}
+
+.mini-cat-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+}
+
+.mini-cat-pct {
+    font-size: 0.75rem;
+    opacity: 0.6;
+}
+
+.mini-progress-bar {
+    height: 8px;
+    background: var(--bg-main);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.mini-progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 浪費アラートカード */
+.waste-alert-card {
+    background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+    border: 1px solid #fecdd3;
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-top: 1rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s;
+}
+
+[data-theme="dark"] .waste-alert-card {
+    background: linear-gradient(135deg, #4c0519 0%, #881337 100%);
+    border: 1px solid #9f1239;
+}
+
+.waste-alert-card:active {
+    transform: scale(0.98);
+}
+
+.waste-alert-content {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.waste-alert-icon {
+    font-size: 1.75rem;
+}
+
+.waste-alert-text strong {
+    display: block;
+    font-size: 0.95rem;
+    color: #9f1239;
+    margin-bottom: 0.1rem;
+}
+
+[data-theme="dark"] .waste-alert-text strong {
+    color: #fda4af;
+}
+
+.waste-alert-text p {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    color: #9f1239;
+    line-height: 1.4;
+}
+
+[data-theme="dark"] .waste-alert-text p {
+    color: #fda4af;
+}
+
+/* アクションセンター */
+.action-center {
+    background: var(--bg-card);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+}
+
+.action-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.action-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.action-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-    margin-top: 1.5rem;
+    margin-top: 1.25rem;
 }
 
-.quick-link {
-    background: var(--card-bg);
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 16px;
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-    text-decoration: none;
+    background: var(--bg-main);
     color: var(--text);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
     transition: all 0.2s;
 }
 
-.quick-link:hover {
-    border-color: var(--primary);
-    box-shadow: 0 4px 12px var(--shadow);
+.action-btn:active {
+    transform: translateY(2px);
+    background: var(--border);
 }
 
-.quick-link-icon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-}
-
-.quick-link-text {
-    font-weight: 600;
-    font-size: 0.9375rem;
-}
-
-/* FullCalendar カスタマイズ */
-.fc {
-    background: var(--card-bg);
-}
-
-.fc-theme-standard td,
-.fc-theme-standard th {
-    border-color: var(--border);
-}
-
-.fc-col-header-cell {
-    background: var(--bg);
-    font-weight: 600;
-    color: var(--text);
-}
-
-.fc-daygrid-day-number {
-    color: var(--text);
-}
-
-.fc-event {
+.action-btn.primary {
     background: var(--primary);
-    border-color: var(--primary);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
 
-.fc-button {
-    background: var(--primary) !important;
-    border-color: var(--primary) !important;
+.btn-icon {
+    font-size: 1.75rem;
 }
 
-.fc-button:hover {
-    background: var(--primary-dark) !important;
+/* クイック入力ボタンの改良 */
+.quick-presets {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 0.75rem;
 }
 
-.fc-daygrid-day {
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.fc-daygrid-day:hover {
-    background-color: var(--bg) !important;
-}
-
-.fc-day-today {
-    background-color: rgba(74, 144, 226, 0.1) !important;
-}
-
-.back-link {
-    display: inline-flex;
+.preset-btn {
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    color: var(--text-light);
-    text-decoration: none;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
+    gap: 0.4rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
 }
 
-.back-link:hover {
-    color: var(--primary);
+.preset-btn:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+}
+
+.preset-icon {
+    font-size: 1.75rem;
+}
+
+.preset-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.preset-amount {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+/* バッジの改良 */
+.entry-missing-badge {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid #fde68a;
+}
+
+.entry-done-badge {
+    background: #dcfce7;
+    color: #166534;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid #bbf7d0;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
