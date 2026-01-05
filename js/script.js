@@ -42,6 +42,10 @@ window.closeModal = function () {
 };
 
 window.openAddModal = function () {
+    const dateInput = document.getElementById('addDateInput');
+    if (dateInput && !dateInput.value) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+    }
     document.getElementById('addModal').style.display = 'flex';
 };
 
@@ -211,8 +215,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 tooltip.style.display = 'block';
             },
             eventMouseMove: function (info) {
-                tooltip.style.left = (info.jsEvent.clientX + 15) + 'px';
-                tooltip.style.top = (info.jsEvent.clientY + 15) + 'px';
+                // clientX/Y を使い、スクロールを考慮した viewport 基準で配置 (fixed用)
+                tooltip.style.left = (info.jsEvent.clientX + 10) + 'px';
+                tooltip.style.top = (info.jsEvent.clientY + 10) + 'px';
             },
             eventMouseLeave: function () { tooltip.style.display = 'none'; }
         });

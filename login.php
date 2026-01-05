@@ -44,8 +44,8 @@ if (isset($_POST['login'])) {
 <body class="login-page">
     <div class="login-container">
         <div class="logo">
-            <div class="logo-icon">💰</div>
-            <div class="logo-text">Money Partner (マネ・パト)</div>
+            <img src="img/app_icon.jpg" alt="Logo" style="width: 64px; height: 64px; border-radius: 12px; margin-bottom: 1rem;">
+            <div class="logo-text">Money Partner</div>
         </div>
         
         <h2>ログイン</h2>

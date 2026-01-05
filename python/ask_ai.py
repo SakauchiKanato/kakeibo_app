@@ -17,7 +17,7 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
-def get_daily_summary(items_list, total_spent, char_type, username):
+def get_daily_summary(items_list, total_spent, char_type, username, insights=""):
     # --- キャラクターごとの性格設定（プロンプトの出し分け） ---
     if char_type == "strict":
         persona = "あなたは厳しい鬼コンサルタントです。"
@@ -45,6 +45,12 @@ def get_daily_summary(items_list, total_spent, char_type, username):
     except:
         decoded_items = items_list
 
+    # インサイト（浪費・超過）のデコード
+    try:
+        decoded_insights = base64.b64decode(insights).decode('utf-8')
+    except:
+        decoded_insights = insights
+
     prompt = f"""
     {persona}
 
@@ -60,13 +66,16 @@ def get_daily_summary(items_list, total_spent, char_type, username):
     今日の支出リスト:
     {decoded_items}
     合計支出: {total_spent}円
-    今月の残り予算: {remaining_budget}円
+    今月の残り予算（日割り自由枠）: {remaining_budget}円
+
+    【特別な家計状況（要チェック）】
+    {decoded_insights if decoded_insights else "特になし"}
 
     【回答の指示】
     - {display_name}へのパーソナライズされたフィードバックを行ってください。
-    - 支出の内容に基づき、具体的に言及してください。
+    - 今日の支出だけでなく、もし【特別な家計状況】に「【後悔】」や「【超過】」という情報があれば、それに対して優しく（または厳しく）アドバイスや振り返りを促してください。
     - 性格設定（{persona}）を最後まで維持してください。
-    - 全体を3行〜5行程度で回答してください。
+    - 全体を3行〜5行程度で、友だちやパートナーのような親しみやすい口調（または設定通りの口調）で回答してください。
     """
     
     try:
@@ -85,5 +94,6 @@ if __name__ == "__main__":
     character = sys.argv[3] if len(sys.argv) > 3 else "default"
     remaining_budget = sys.argv[4] if len(sys.argv) > 4 else "不明"
     username = sys.argv[5] if len(sys.argv) > 5 else "UNKNOWN_USER"
+    insights = sys.argv[6] if len(sys.argv) > 6 else ""
 
-    print(get_daily_summary(items, total, character, username))
+    print(get_daily_summary(items, total, character, username, insights))
